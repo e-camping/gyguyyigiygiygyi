@@ -131,6 +131,19 @@
   border-radius: var(--radius-sm);
 }
 
+.example-list {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--spacing-sm) 0;
+}
+
+.example-list li {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
 .start-button {
   background: linear-gradient(135deg, var(--accent-success), #059669);
   color: white;
@@ -428,6 +441,257 @@
 }
 
 /* ============================================
+   RANK-BASED DISPLAY
+   ============================================ */
+
+.rank-feedback {
+  background: var(--bg-tertiary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  border: 3px solid var(--accent-success);
+  animation: slideIn 0.3s ease;
+}
+
+.rank-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.rank-emoji {
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.rank-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.rank-number {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.rank-number strong {
+  color: var(--accent-success);
+  font-size: 2rem;
+}
+
+.rank-message {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.rank-word {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.rank-word strong {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+/* Rank-based color classes */
+.rank-top {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(255, 215, 0, 0.1));
+}
+
+.rank-hot {
+  border-color: var(--accent-hot);
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(239, 68, 68, 0.1));
+}
+
+.rank-warm {
+  border-color: var(--accent-warm);
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(245, 158, 11, 0.1));
+}
+
+.rank-cool {
+  border-color: var(--accent-cold);
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(59, 130, 246, 0.1));
+}
+
+.rank-cold {
+  border-color: var(--accent-ice-cold);
+  background: linear-gradient(135deg, var(--bg-tertiary), rgba(6, 182, 212, 0.1));
+}
+
+/* ============================================
+   UPDATED GUESS RANKINGS
+   ============================================ */
+
+.guess-position {
+  font-weight: bold;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  min-width: 50px;
+}
+
+.guess-rank {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  flex: 1;
+  text-align: right;
+}
+
+.guess-rank strong {
+  color: var(--accent-success);
+  font-size: 1.2rem;
+}
+
+/* ============================================
+   WORD LIST
+   ============================================ */
+
+.word-list {
+  margin-top: var(--spacing-xl);
+  background: var(--bg-tertiary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+}
+
+.word-list h3 {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+}
+
+.word-list-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.word-list-search {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.search-input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  background: var(--bg-primary);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.clear-search {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.clear-search:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+.word-list-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.search-results {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.show-all-button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--accent-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.show-all-button:hover {
+  background: var(--accent-primary-hover);
+  transform: translateY(-2px);
+}
+
+.word-list-footer {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.word-list-footer p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.word-chip {
+  background: var(--bg-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.word-chip:hover {
+  border-color: var(--accent-success);
+  background: var(--bg-primary);
+}
+
+.word-chip.guessed {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+  font-weight: 600;
+}
+
+/* ============================================
    VICTORY SCREEN
    ============================================ */
 
@@ -689,5 +953,28 @@
   .current-feedback {
     flex-direction: column;
     text-align: center;
+  }
+
+  .rank-display {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .rank-emoji {
+    font-size: 3.5rem;
+  }
+
+  .rank-number {
+    font-size: 1.5rem;
+  }
+
+  .words-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--spacing-xs);
+  }
+
+  .word-chip {
+    font-size: 0.85rem;
+    padding: var(--spacing-xs);
   }
 }

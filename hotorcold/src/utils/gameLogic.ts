@@ -1,28 +1,28 @@
 /**
  * Game logic utilities for the Hot or Cold word guessing game
- * Uses semantic similarity (meaning-based) instead of character similarity
+ * Uses semantic similarity ranking system - ranks words by meaning
  */
 
 import * as use from '@tensorflow-models/universal-sentence-encoder';
 import '@tensorflow/tfjs';
+import { WORD_LIST as IMPORTED_WORD_LIST } from './wordlist';
 
-// Word list for the game (at least 20 words with diverse meanings)
-export const WORD_LIST = [
-  "python", "computer", "keyboard", "program", "function",
-  "variable", "database", "internet", "software", "hardware",
-  "algorithm", "network", "terminal", "browser", "developer",
-  "application", "security", "memory", "processor", "interface",
-  "system", "server", "coding", "digital", "technology"
-];
+// Use the comprehensive word list (~3,600 words)
+export const WORD_LIST = IMPORTED_WORD_LIST;
 
-// Feedback types
-export type FeedbackType = "HOT" | "WARM" | "COLD" | "ICE_COLD";
-
-export interface GuessData {
+// Interface for word rankings
+export interface WordRanking {
   word: string;
   similarity: number;
-  feedback: FeedbackType;
-  emoji: string;
+  rank: number; // 1 = most similar, higher = less similar
+}
+
+// Interface for guess data
+export interface GuessData {
+  word: string;
+  rank: number; // Rank of this word compared to all words
+  totalWords: number; // Total number of ranked words
+  similarity: number; // Raw similarity score for reference
 }
 
 // Singleton model instance
@@ -82,49 +82,98 @@ function cosineSimilarity(vecA: number[], vecB: number[]): number {
 }
 
 /**
- * Calculate semantic similarity between two words using Universal Sentence Encoder.
- * Returns a percentage (0-100) representing how similar the meanings are.
+ * Compute rankings for all words in the word list compared to a target word.
+ * Returns an array of WordRanking objects sorted by similarity (most similar first).
  */
-export async function calculateSemanticSimilarity(word1: string, word2: string): Promise<number> {
-  try {
-    const model = await loadModel();
+export async function computeWordRankings(targetWord: string): Promise<WordRanking[]> {
+  const model = await loadModel();
 
-    // Embed both words
-    const embeddings = await model.embed([word1.toLowerCase(), word2.toLowerCase()]);
-    const embeddingsArray = await embeddings.array();
+  // Get all words except the target word
+  const wordsToRank = WORD_LIST.filter(word => word.toLowerCase() !== targetWord.toLowerCase());
 
-    // Calculate cosine similarity
-    const similarity = cosineSimilarity(embeddingsArray[0], embeddingsArray[1]);
+  // Embed all words at once for efficiency
+  const allWords = [targetWord, ...wordsToRank];
+  const embeddings = await model.embed(allWords.map(w => w.toLowerCase()));
+  const embeddingsArray = await embeddings.array();
 
-    // Convert from [-1, 1] range to [0, 100] percentage
-    // Cosine similarity is already in [0, 1] for semantic similarity typically
-    // We'll normalize it to percentage and ensure it's positive
-    const percentage = Math.max(0, similarity) * 100;
+  // Target embedding is first
+  const targetEmbedding = embeddingsArray[0];
 
-    // Clean up tensors to prevent memory leaks
-    embeddings.dispose();
-
-    return Math.round(percentage * 100) / 100; // Round to 2 decimal places
-  } catch (error) {
-    console.error('Error calculating semantic similarity:', error);
-    throw error;
+  // Calculate similarity for each word
+  const similarities: { word: string; similarity: number }[] = [];
+  for (let i = 1; i < embeddingsArray.length; i++) {
+    const similarity = cosineSimilarity(targetEmbedding, embeddingsArray[i]);
+    similarities.push({
+      word: wordsToRank[i - 1],
+      similarity: Math.max(0, similarity)
+    });
   }
+
+  // Sort by similarity (highest first)
+  similarities.sort((a, b) => b.similarity - a.similarity);
+
+  // Assign ranks
+  const rankings: WordRanking[] = similarities.map((item, index) => ({
+    word: item.word,
+    similarity: item.similarity,
+    rank: index + 1 // Rank starts at 1
+  }));
+
+  // Clean up tensors
+  embeddings.dispose();
+
+  console.log('Rankings computed:', rankings.slice(0, 5)); // Log top 5 for debugging
+
+  return rankings;
 }
 
 /**
- * Get temperature-based feedback and emoji based on similarity percentage.
- * Thresholds adjusted for semantic similarity (typically lower than string similarity)
+ * Find the rank of a guessed word in the pre-computed rankings.
+ * Returns GuessData with rank information.
+ * Throws an error if the word is not in the rankings.
  */
-export function getFeedback(similarity: number): { type: FeedbackType; emoji: string } {
-  // Semantic similarity typically has lower scores, so we adjust thresholds
-  if (similarity >= 75) {
-    return { type: "HOT", emoji: "🔥" };
-  } else if (similarity >= 50) {
-    return { type: "WARM", emoji: "🌤" };
-  } else if (similarity >= 25) {
-    return { type: "COLD", emoji: "🧊" };
+export function processGuess(
+  guess: string,
+  rankings: WordRanking[]
+): GuessData {
+  const guessLower = guess.toLowerCase().trim();
+
+  // Check if the guess is in our pre-computed rankings
+  const ranking = rankings.find(r => r.word.toLowerCase() === guessLower);
+
+  if (!ranking) {
+    throw new Error("NOT_IN_WORD_LIST");
+  }
+
+  // Word is in the word list, return its rank
+  return {
+    word: guessLower,
+    rank: ranking.rank,
+    totalWords: rankings.length,
+    similarity: ranking.similarity
+  };
+}
+
+/**
+ * Get emoji and feedback message based on rank.
+ */
+export function getRankFeedback(rank: number, totalWords: number): { emoji: string; message: string } {
+  const percentile = (rank / totalWords) * 100;
+
+  if (rank === 1) {
+    return { emoji: "🔥", message: "INCREDIBLE! You found the #1 closest word!" };
+  } else if (rank <= 3) {
+    return { emoji: "🔥", message: "SO HOT! You're in the top 3!" };
+  } else if (percentile <= 20) {
+    return { emoji: "🔥", message: "HOT! Top 20%!" };
+  } else if (percentile <= 40) {
+    return { emoji: "🌤", message: "WARM! Getting closer..." };
+  } else if (percentile <= 60) {
+    return { emoji: "🧊", message: "COOL... Keep trying" };
+  } else if (percentile <= 80) {
+    return { emoji: "❄️", message: "COLD... Not quite there" };
   } else {
-    return { type: "ICE_COLD", emoji: "❄️" };
+    return { emoji: "❄️", message: "ICE COLD... Very different meaning" };
   }
 }
 
@@ -145,6 +194,14 @@ export function validateGuess(guess: string): string | null {
     return "Guess must be at least 2 letters long!";
   }
 
+  // Check if word is in the word list
+  const guessLower = guess.toLowerCase().trim();
+  const isInWordList = WORD_LIST.some(word => word.toLowerCase() === guessLower);
+
+  if (!isInWordList) {
+    return "Not in word list!";
+  }
+
   return null;
 }
 
@@ -153,22 +210,6 @@ export function validateGuess(guess: string): string | null {
  */
 export function getRandomWord(): string {
   return WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
-}
-
-/**
- * Process a guess and return the guess data.
- * This is now async because it needs to calculate semantic similarity.
- */
-export async function processGuess(guess: string, target: string): Promise<GuessData> {
-  const similarity = await calculateSemanticSimilarity(guess, target);
-  const { type, emoji } = getFeedback(similarity);
-
-  return {
-    word: guess.toLowerCase().trim(),
-    similarity,
-    feedback: type,
-    emoji
-  };
 }
 
 /**
