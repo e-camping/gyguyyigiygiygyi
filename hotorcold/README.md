@@ -76,6 +76,49 @@ npm run build
 npm run preview
 ```
 
+### Deploying to Vercel
+
+The easiest way to deploy this app is using [Vercel](https://vercel.com):
+
+**Option 1: Deploy via Vercel CLI**
+
+```bash
+# Install Vercel CLI globally (if not already installed)
+npm install -g vercel
+
+# Deploy from your project directory
+cd /path/to/hotorcold
+vercel
+
+# Follow the prompts:
+# - Set up and deploy? Yes
+# - Which scope? (Select your account)
+# - Link to existing project? No
+# - Project name? (hotorcold or your preferred name)
+# - Directory? ./
+# - Override settings? No
+
+# For production deployment
+vercel --prod
+```
+
+**Option 2: Deploy via Vercel Dashboard**
+
+1. Push your code to GitHub, GitLab, or Bitbucket
+2. Go to [vercel.com](https://vercel.com) and sign in
+3. Click "New Project"
+4. Import your repository
+5. Vercel will auto-detect the Vite framework
+6. Click "Deploy"
+
+**Configuration:** The project includes a `vercel.json` file with optimal settings:
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Framework: Vite
+- SPA routing handled automatically
+
+**Note:** First load on Vercel will download the 50MB TensorFlow model, so initial page load may take a few seconds. The model is then cached in the browser.
+
 ## ✨ Features
 
 - 🧠 **AI-Powered Semantic Ranking** - Uses TensorFlow.js and Universal Sentence Encoder
