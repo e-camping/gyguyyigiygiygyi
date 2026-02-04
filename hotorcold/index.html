@@ -2,12 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/hotorcold/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hot or Cold - Word Guessing Game</title>
+    <title>Hot or Cold</title>
+    <style>
+      .login-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: #089E6F;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+      }
+      .login-btn:hover {
+        transform: translateY(-2px);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/hotorcold/src/main.tsx"></script>
+    <a href="/login" class="login-btn">Sign In with Google</a>
+    <script type="module" src="src/main.tsx"></script>
   </body>
 </html>

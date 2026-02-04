@@ -1,3 +1,5 @@
+# We need to change the Client ID for login if somehow this thing actually gets deployed.
+
 # Hot or Cold Word Guessing Game 🧠
 
 A beautiful, AI-powered word guessing game where you try to find a secret word based on **semantic similarity ranking**. Get ranked based on how close your guess is in meaning!
