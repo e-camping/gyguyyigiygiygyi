@@ -7,8 +7,7 @@ import './index.css'
 
 const path = window.location.pathname;
 
-// Replace this with your actual Client ID from Google Cloud Console
-const GOOGLE_CLIENT_ID = "887104009432-poh4cgvkfk72qetrh2g84ghaamrd8p5q.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "887104009432-poh4cgvkfk72qetrh2g84ghaamrd8p5q.apps.googleusercontent.com"; // Please replace the client id with something else. This is only temporary!
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -17,4 +16,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </GoogleOAuthProvider>
   </React.StrictMode>,
 )
-//WE MUST SET UP A NEW CLIENT ID WHEN WE GET A REAL DOMAIN!!!!!!

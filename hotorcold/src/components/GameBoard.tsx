@@ -28,6 +28,7 @@ export default function GameBoard({ onReset }: GameBoardProps) {
   const [won, setWon] = useState(false);
   const [guessCount, setGuessCount] = useState(0);
   const [processing, setProcessing] = useState(false);
+  const [gaveUp, setGaveUp] = useState(false);
 
   // Compute rankings when component mounts
   useEffect(() => {
@@ -70,6 +71,10 @@ export default function GameBoard({ onReset }: GameBoardProps) {
     }
   };
 
+  const handleGiveUp = () => {
+    setGaveUp(true);
+  };
+
   const handlePlayAgain = () => {
     onReset();
   };
@@ -105,7 +110,29 @@ export default function GameBoard({ onReset }: GameBoardProps) {
         </button>
       </div>
 
-      {!won ? (
+      {gaveUp ? (
+        <div className="victory-screen">
+          <div className="victory-content">
+            <div className="victory-emoji">😔</div>
+            <h2>GAME OVER</h2>
+            <p className="victory-message">The word was:</p>
+            <div className="victory-word">{targetWord.toUpperCase()}</div>
+            <p className="victory-stats">
+              You made <strong>{guessCount}</strong> {guessCount === 1 ? "guess" : "guesses"}.
+            </p>
+            <button className="play-again-button" onClick={handlePlayAgain}>
+              Play Again
+            </button>
+          </div>
+
+          {guesses.length > 0 && (
+            <div className="final-rankings">
+              <h3>Your Journey:</h3>
+              <GuessRankings guesses={guesses} />
+            </div>
+          )}
+        </div>
+      ) : !won ? (
         <>
           <div className="game-info">
             <div className="info-card">
@@ -122,7 +149,7 @@ export default function GameBoard({ onReset }: GameBoardProps) {
             </div>
           </div>
 
-          <GuessInput onGuess={handleGuess} disabled={won || processing} />
+          <GuessInput onGuess={handleGuess} onGiveUp={handleGiveUp} disabled={won || processing} guessCount={guessCount} />
 
           {processing && (
             <div className="processing-indicator">

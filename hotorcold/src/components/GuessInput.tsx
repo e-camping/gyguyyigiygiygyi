@@ -7,10 +7,12 @@ import { validateGuess } from "../utils/gameLogic";
 
 interface GuessInputProps {
   onGuess: (guess: string) => void;
+  onGiveUp?: () => void;
   disabled?: boolean;
+  guessCount?: number;
 }
 
-export default function GuessInput({ onGuess, disabled = false }: GuessInputProps) {
+export default function GuessInput({ onGuess, onGiveUp, disabled = false, guessCount = 0 }: GuessInputProps) {
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +55,11 @@ export default function GuessInput({ onGuess, disabled = false }: GuessInputProp
           <button type="submit" disabled={disabled || !input.trim()}>
             Guess
           </button>
+          {guessCount >= 10 && onGiveUp && (
+            <button type="button" className="give-up-button" onClick={onGiveUp}>
+              Give Up
+            </button>
+          )}
         </div>
         {error && <div className="error-message">❌ {error}</div>}
       </form>
