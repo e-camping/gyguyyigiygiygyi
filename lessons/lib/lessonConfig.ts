@@ -29,9 +29,9 @@ export const lessons: Lesson[] = [
     id: '4',
     title: 'Text Embedding',
     slug: 'text-embedding',
-    description: 'Discover how words are represented as vectors with the Hot or Cold game',
-    type: 'game',
-    duration: '25 min'
+    description: 'Learn how words are represented as vectors and implement a similarity ranking algorithm',
+    type: 'interactive',
+    duration: '30 min'
   },
   {
     id: '5',

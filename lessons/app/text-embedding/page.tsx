@@ -2,7 +2,6 @@
 
 import { LessonLayout } from '@/components/LessonLayout';
 import { CodeExample } from '@/components/CodeExample';
-import { HotColdGame } from '@/components/HotColdGame';
 import { InteractiveExercise } from '@/components/InteractiveExercise';
 import { markLessonComplete } from '@/lib/progressTracker';
 
@@ -17,7 +16,7 @@ export default function TextEmbeddingLesson() {
       description="Learn how computers represent words as vectors to understand meaning"
       currentSlug="text-embedding"
       lessonId="4"
-      type="game"
+      type="interactive"
     >
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">What Are Text Embeddings?</h2>
@@ -36,17 +35,17 @@ export default function TextEmbeddingLesson() {
 
         <h3 className="text-xl font-semibold mb-3">Example: Word to Vector</h3>
         <CodeExample
-          language="javascript"
-          code={`// Instead of just the word "cat", we represent it as numbers:
-const cat = [0.2, 0.8, 0.1, 0.9, 0.3];
+          language="python"
+          code={`# Instead of just the word "cat", we represent it as numbers:
+cat = [0.2, 0.8, 0.1, 0.9, 0.3]
 
-// Similar words have similar numbers:
-const dog = [0.3, 0.7, 0.2, 0.8, 0.4];  // Similar to cat!
+# Similar words have similar numbers:
+dog = [0.3, 0.7, 0.2, 0.8, 0.4]  # Similar to cat!
 
-// Very different words have very different numbers:
-const pizza = [0.9, 0.1, 0.7, 0.2, 0.8];  // Not similar to cat
+# Very different words have very different numbers:
+pizza = [0.9, 0.1, 0.7, 0.2, 0.8]  # Not similar to cat
 
-// Now the computer can measure "similarity" using math!`}
+# Now the computer can measure "similarity" using math!`}
         />
 
         <p className="mt-4 mb-4">
@@ -69,26 +68,25 @@ const pizza = [0.9, 0.1, 0.7, 0.2, 0.8];  // Not similar to cat
 
         <CodeExample
           title="Character-Based Similarity"
-          language="javascript"
-          code={`function simpleSimilarity(word1, word2) {
-  // Get unique characters from each word
-  const chars1 = new Set(word1.toLowerCase());
-  const chars2 = new Set(word2.toLowerCase());
+          language="python"
+          code={`def simple_similarity(word1, word2):
+    # Get unique characters from each word
+    chars1 = set(word1.lower())
+    chars2 = set(word2.lower())
 
-  // Find common characters
-  const common = [...chars1].filter(c => chars2.has(c));
+    # Find common characters (intersection)
+    common = chars1 & chars2
 
-  // Jaccard similarity: intersection / union
-  const union = new Set([...chars1, ...chars2]);
-  const similarity = common.length / union.size;
+    # Jaccard similarity: intersection / union
+    union = chars1 | chars2
+    similarity = len(common) / len(union)
 
-  return similarity;
-}
+    return similarity
 
-// Examples
-simpleSimilarity("cat", "hat");    // 0.5 (share 'a' and 't')
-simpleSimilarity("cat", "dog");    // 0.0 (no common letters)
-simpleSimilarity("happy", "happen"); // 0.57 (share h, a, p)`}
+# Examples
+simple_similarity("cat", "hat")      # 0.5 (share 'a' and 't')
+simple_similarity("cat", "dog")      # 0.0 (no common letters)
+simple_similarity("happy", "happen") # 0.57 (share h, a, p)`}
         />
 
         <h3 className="text-xl font-semibold mb-3 mt-6">Advanced: Semantic Embeddings</h3>
@@ -98,25 +96,93 @@ simpleSimilarity("happy", "happen"); // 0.57 (share h, a, p)`}
         </p>
 
         <CodeExample
-          language="javascript"
-          code={`// Modern embedding models understand that these are similar in meaning:
-similarity("king", "queen");     // High similarity (both royalty)
-similarity("walk", "run");       // High similarity (both movement)
-similarity("doctor", "hospital"); // High similarity (related concepts)
+          language="python"
+          code={`# Modern embedding models understand that these are similar in meaning:
+similarity("king", "queen")      # High similarity (both royalty)
+similarity("walk", "run")        # High similarity (both movement)
+similarity("doctor", "hospital") # High similarity (related concepts)
 
-// Even though they share no letters!
-// The model learned from seeing how words are used in context.`}
+# Even though they share no letters!
+# The model learned from seeing how words are used in context.`}
         />
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Play the Hot or Cold Game!</h2>
+        <h2 className="text-2xl font-bold mb-4">Creating Text Embeddings</h2>
         <p className="mb-4">
-          Try this game to experience how text embeddings work. The game picks a random word, and you have
-          to guess it. After each guess, you'll get feedback on how "similar" your guess is to the target word.
+          Let's learn how to create a simple text embedding using character frequencies. This is a basic
+          approach that helps understand the concept before moving to more advanced methods.
         </p>
 
-        <HotColdGame />
+        <h3 className="text-xl font-semibold mb-3">Character Frequency Vectors</h3>
+        <p className="mb-4">
+          One simple way to create a text embedding is to represent each word by the frequency of its characters:
+        </p>
+
+        <CodeExample
+          title="Character-Based Embedding"
+          language="python"
+          code={`def compute_char_vector(word):
+    # Count character frequencies
+    from collections import Counter
+    lower_word = word.lower()
+    char_count = Counter(lower_word)
+
+    # Normalize by word length to get frequencies
+    total = len(lower_word)
+    vector = {char: count / total for char, count in char_count.items()}
+
+    return vector
+
+# Example: "cat" becomes:
+# {'c': 0.33, 'a': 0.33, 't': 0.33}
+
+# Example: "pizza" becomes:
+# {'p': 0.2, 'i': 0.2, 'z': 0.4, 'a': 0.2}
+# Notice 'z' is 0.4 because it appears twice!`}
+        />
+
+        <h3 className="text-xl font-semibold mb-3 mt-6">Computing Cosine Similarity</h3>
+        <p className="mb-4">
+          Once we have vectors, we can measure how similar they are using <strong>cosine similarity</strong>.
+          This measures the angle between two vectors (0 = completely different, 1 = identical).
+        </p>
+
+        <CodeExample
+          language="python"
+          code={`def cosine_similarity(vec1, vec2):
+    import math
+
+    # Get all unique characters from both vectors
+    all_chars = set(vec1.keys()) | set(vec2.keys())
+
+    # Compute dot product
+    dot_product = 0
+    for char in all_chars:
+        v1 = vec1.get(char, 0)
+        v2 = vec2.get(char, 0)
+        dot_product += v1 * v2
+
+    # Compute magnitudes
+    mag1 = math.sqrt(sum(v ** 2 for v in vec1.values()))
+    mag2 = math.sqrt(sum(v ** 2 for v in vec2.values()))
+
+    if mag1 == 0 or mag2 == 0:
+        return 0
+
+    return dot_product / (mag1 * mag2)
+
+# Examples:
+cosine_similarity(
+    {'c': 0.33, 'a': 0.33, 't': 0.33},  # "cat"
+    {'c': 0.33, 'a': 0.33, 'r': 0.33}   # "car"
+)  # Returns ~0.67 (high similarity - share 'c' and 'a')
+
+cosine_similarity(
+    {'c': 0.33, 'a': 0.33, 't': 0.33},  # "cat"
+    {'d': 0.33, 'o': 0.33, 'g': 0.33}   # "dog"
+)  # Returns 0 (no common characters)`}
+        />
       </section>
 
       <section className="mb-8">
@@ -158,61 +224,75 @@ similarity("doctor", "hospital"); // High similarity (related concepts)
 
       <InteractiveExercise
         exerciseId="embedding-similarity"
-        title="Exercise: Implement String Similarity"
+        title="Exercise: Rank Words by Similarity"
         instructions={`
-          <p>Implement a function that calculates how similar two words are based on their characters.</p>
-          <p><strong>Algorithm:</strong></p>
+          <p>Implement a function that ranks words by their similarity to a target word using text embeddings!</p>
+          <p><strong>Your Task:</strong> Complete the <code>rank_words_by_similarity</code> function that:</p>
           <ol>
-            <li>Convert both words to lowercase</li>
-            <li>Get the unique characters from each word</li>
-            <li>Count how many characters they have in common (intersection)</li>
-            <li>Count total unique characters across both words (union)</li>
-            <li>Return: intersection size / union size</li>
+            <li>Creates character frequency embeddings for the target word and all candidate words</li>
+            <li>Computes cosine similarity between the target and each candidate word</li>
+            <li>Ranks words from most similar (rank 1) to least similar</li>
+            <li>Returns a dictionary mapping each word to its rank</li>
           </ol>
-          <p><strong>Example:</strong> "cat" and "hat" share 'a' and 't' (2 chars). Union has 'c', 'a', 't', 'h' (4 chars). Similarity = 2/4 = 0.5</p>
+          <p><strong>Helper Functions Provided:</strong></p>
+          <ul>
+            <li><code>compute_char_vector(word)</code> - Creates a character frequency vector for a word</li>
+            <li><code>cosine_similarity(vec1, vec2)</code> - Computes similarity between two vectors (0 to 1)</li>
+          </ul>
+          <p><strong>Example:</strong> For target "cat" and words ["cat", "car", "dog"], return: <code>{"cat": 1, "car": 2, "dog": 3}</code></p>
+          <p><strong>Hint:</strong> Create a list of (word, similarity) tuples, sort by similarity (highest first), then create the rank mapping!</p>
         `}
-        starterCode={`function wordSimilarity(word1, word2) {
-  // Convert to lowercase
-  const w1 = word1.toLowerCase();
-  const w2 = word2.toLowerCase();
+        starterCode={`from collections import Counter
+import math
 
-  // Get unique characters from each word
+# Helper function: Creates character frequency vector
+def compute_char_vector(word):
+    lower_word = word.lower()
+    char_count = Counter(lower_word)
+    total = len(lower_word)
+    vector = {char: count / total for char, count in char_count.items()}
+    return vector
 
-  // Find common characters (intersection)
+# Helper function: Computes cosine similarity
+def cosine_similarity(vec1, vec2):
+    all_chars = set(vec1.keys()) | set(vec2.keys())
+    dot_product = sum(vec1.get(char, 0) * vec2.get(char, 0) for char in all_chars)
+    mag1 = math.sqrt(sum(v ** 2 for v in vec1.values()))
+    mag2 = math.sqrt(sum(v ** 2 for v in vec2.values()))
+    if mag1 == 0 or mag2 == 0:
+        return 0
+    return dot_product / (mag1 * mag2)
 
-  // Find all unique characters (union)
+# YOUR CODE: Implement this function!
+def rank_words_by_similarity(target, words):
+    # Step 1: Create embedding for target word
 
-  // Return similarity score (intersection / union)
+    # Step 2: Create embeddings for all words and compute their similarities
 
-}`}
+    # Step 3: Sort words by similarity (highest first)
+
+    # Step 4: Create rank mapping {word: rank}
+
+    # Return the rank mapping
+    return {}`}
         testCases={[
           {
-            input: ['cat', 'hat'],
-            expectedOutput: 0.5,
-            description: 'Words with 2 common letters out of 4 total'
+            input: ['cat', ['cat', 'car', 'dog', 'bat', 'rat']],
+            expectedOutput: { 'cat': 1, 'car': 2, 'bat': 3, 'rat': 4, 'dog': 5 },
+            description: 'Rank words similar to "cat" - exact match ranks first'
           },
           {
-            input: ['cat', 'dog'],
-            expectedOutput: 0.0,
-            description: 'Words with no common letters'
+            input: ['hello', ['hello', 'jello', 'yellow', 'mellow', 'world']],
+            expectedOutput: { 'hello': 1, 'jello': 2, 'yellow': 3, 'mellow': 4, 'world': 5 },
+            description: 'Words with more shared characters rank higher'
           },
           {
-            input: ['cat', 'cat'],
-            expectedOutput: 1.0,
-            description: 'Identical words should have similarity 1.0'
-          },
-          {
-            input: ['hello', 'jello'],
-            expectedOutput: 0.6,
-            description: 'Words with 3 common letters (e, l, o) out of 5 total'
-          },
-          {
-            input: ['abc', 'def'],
-            expectedOutput: 0.0,
-            description: 'Completely different words'
+            input: ['pizza', ['pizza', 'piazza', 'pita', 'pasta', 'apple']],
+            expectedOutput: { 'pizza': 1, 'piazza': 2, 'pita': 3, 'pasta': 4, 'apple': 5 },
+            description: 'Food words ranked by character similarity'
           }
         ]}
-        language="javascript"
+        language="python"
         onComplete={handleComplete}
       />
 
