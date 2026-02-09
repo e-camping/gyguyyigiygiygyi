@@ -1,9 +1,5 @@
 export default function handler(request, response) {
-  const quotes = [
-    "hello"
-  ];
+  let x = 2;
 
-  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-
-  return response.status(200).json({ quote: randomQuote });
+  return response.status(200).json({ quote: x });
 }
