@@ -38,11 +38,11 @@
     <script type="module" src="src/main.tsx"></script>
     <h1 class="qotd">Loading</h1>
     <script>
-      fetch('/api/quote')
+      fetch('/api/modal')
         .then(response => response.json())
         .then(data => {
-          if (data.quote) {
-            document.querySelector('.qotd').textContent = data.quote;
+          if (data.output) {
+            document.querySelector('.qotd').textContent = data.output;
           }
         })
         .catch(err => console.error('Failed to fetch quote:', err));
