@@ -1,4 +1,7 @@
 import { ModalClient } from "modal";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 export default async function handler(request, response) {
   const modal = new ModalClient();
@@ -8,10 +11,10 @@ export default async function handler(request, response) {
   });
   const image = modal.images.fromRegistry("python:3.11-slim");
 
-  const fs = await import("fs");
-  const path = await import("path");
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
   const file = "quote.py";
-  const file_contents = fs.readFileSync(path.join(process.cwd(), "python", file), "utf-8");
+  const file_contents = fs.readFileSync(path.join(__dirname, "../python", file), "utf-8");
 
   const sb = await modal.sandboxes.create(app, image, { timeoutMs: 10000 });
   console.log(`Sandbox ID: ${sb.sandboxId}`);
