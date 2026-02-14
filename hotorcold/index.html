@@ -36,9 +36,9 @@
     <div id="root"></div>
     <a href="/login" class="login-btn">Sign In with Google</a>
     <script type="module" src="src/main.tsx"></script>
-    <h1 class="qotd">Loading</h1>
+    <h1 class="qotd"></h1>
     <script>
-      fetch('/api/modal')
+      fetch('/api/quote')
         .then(response => response.json())
         .then(data => {
           if (data.output) {
